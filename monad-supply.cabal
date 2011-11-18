@@ -16,3 +16,7 @@ Library
   Hs-Source-Dirs:  src
   Build-Depends:   base >= 4,mtl >= 2
   GHC-Options:     -Wall
+
+Source-Repository head
+  type:     git
+  location: git://github.com/ghulette/monad-supply.git

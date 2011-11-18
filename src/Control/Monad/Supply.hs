@@ -16,6 +16,7 @@ module Control.Monad.Supply
 import Control.Monad.Identity
 import Control.Monad.State
 import Control.Monad.Supply.Class
+import Data.Monoid
 
 -- | Monad transformer.
 newtype SupplyT s m a = SupplyT (StateT [s] m a)
@@ -28,6 +29,17 @@ instance Monad m => MonadSupply s (SupplyT s m) where
     supply = SupplyT $ do (x:xs) <- get
                           put xs
                           return x
+
+-- Actually any monad/monoid pair gives rise to a new monoid, i.e.
+--   instance (Monad m,Monoid a) => Monoid (m a)
+-- but we can't write it like that because it conflicts with existing
+-- instances provided by Data.Monoid.
+instance (Monoid a) => Monoid (Supply s a) where
+  mempty = return mempty
+  m1 `mappend` m2 = do
+    x1 <- m1
+    x2 <- m2
+    return (x1 `mappend` x2)
 
 supplies :: MonadSupply s m => Int -> m [s]
 supplies n = replicateM n supply
