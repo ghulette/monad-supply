@@ -1,11 +1,17 @@
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+
+-- | Support for computations which consume values from a (possibly infinite)
+-- supply. See http://www.haskell.org/haskellwiki/New_monads/MonadSupply for
+-- details.
 
 module Control.Monad.Supply
-( module Control.Monad.Supply.Class
+( MonadSupply
 , SupplyT
 , Supply
+, supply
 , evalSupplyT
 , evalSupply
 , runSupplyT
@@ -15,25 +21,27 @@ module Control.Monad.Supply
 
 import Control.Monad.Identity
 import Control.Monad.State
-import Control.Monad.Supply.Class
 import Data.Monoid
 
--- | Monad transformer.
+class Monad m => MonadSupply s m | m -> s where
+  supply :: m s
+
+-- | Supply monad transformer.
 newtype SupplyT s m a = SupplyT (StateT [s] m a)
     deriving (Functor, Monad, MonadTrans, MonadIO)
- 
+
+-- | Supply monad. 
 newtype Supply s a = Supply (SupplyT s Identity a)
     deriving (Functor, Monad, MonadSupply s)
- 
+
 instance Monad m => MonadSupply s (SupplyT s m) where
     supply = SupplyT $ do (x:xs) <- get
                           put xs
                           return x
 
--- Actually any monad/monoid pair gives rise to a new monoid, i.e.
---   instance (Monad m,Monoid a) => Monoid (m a)
--- but we can't write it like that because it conflicts with existing
--- instances provided by Data.Monoid.
+-- | Monoid instance for the supply monad. Actually any monad/monoid pair gives
+-- rise to this monoid instance, but we can't write it like that because it
+-- would conflict with existing instances provided by Data.Monoid.
 instance (Monoid a) => Monoid (Supply s a) where
   mempty = return mempty
   m1 `mappend` m2 = do
@@ -41,6 +49,7 @@ instance (Monoid a) => Monoid (Supply s a) where
     x2 <- m2
     return (x1 `mappend` x2)
 
+-- | Get n supplies.
 supplies :: MonadSupply s m => Int -> m [s]
 supplies n = replicateM n supply
 

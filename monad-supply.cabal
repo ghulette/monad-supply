@@ -10,9 +10,10 @@ Category:      Control, Data, Monads
 Author:        Geoff Hulette and unknown HaskellWiki contributor(s).
 Maintainer:    Geoff Hulette <ghulette@gmail.com>
 Stability:     experimental
+Tested-With:   GHC == 7.0.3
 
 Library
-  Exposed-modules: Control.Monad.Supply.Class,Control.Monad.Supply
+  Exposed-modules: Control.Monad.Supply
   Hs-Source-Dirs:  src
   Build-Depends:   base >= 4,mtl >= 2
   GHC-Options:     -Wall
