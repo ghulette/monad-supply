@@ -10,7 +10,6 @@ module Control.Monad.Supply
 ( MonadSupply
 , SupplyT
 , Supply
-, supply
 , evalSupplyT
 , evalSupply
 , runSupplyT
@@ -27,16 +26,16 @@ class Monad m => MonadSupply s m | m -> s where
 
 -- | Supply monad transformer.
 newtype SupplyT s m a = SupplyT (StateT [s] m a)
-    deriving (Functor, Monad, MonadTrans, MonadIO)
+  deriving (Functor, Monad, MonadTrans, MonadIO)
 
 -- | Supply monad. 
 newtype Supply s a = Supply (SupplyT s Identity a)
-    deriving (Functor, Monad, MonadSupply s)
+  deriving (Functor, Monad, MonadSupply s)
 
 instance Monad m => MonadSupply s (SupplyT s m) where
-    supply = SupplyT $ do (x:xs) <- get
-                          put xs
-                          return x
+  supply = SupplyT $ do (x:xs) <- get
+                        put xs
+                        return x
 
 -- | Monoid instance for the supply monad. Actually any monad/monoid pair gives
 -- rise to this monoid instance, but we can't write it like that because it
