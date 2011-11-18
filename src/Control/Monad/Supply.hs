@@ -6,7 +6,6 @@
 -- | Support for computations which consume values from a (possibly infinite)
 -- supply. See http://www.haskell.org/haskellwiki/New_monads/MonadSupply for
 -- details.
-
 module Control.Monad.Supply
 ( MonadSupply
 , SupplyT
