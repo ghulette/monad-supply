@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
@@ -7,7 +8,7 @@
 -- supply. See http://www.haskell.org/haskellwiki/New_monads/MonadSupply for
 -- details.
 module Control.Monad.Supply
-( MonadSupply
+( MonadSupply (..)
 , SupplyT
 , Supply
 , evalSupplyT
@@ -19,6 +20,9 @@ module Control.Monad.Supply
 
 import Control.Monad.Identity
 import Control.Monad.State
+import Control.Monad.Error
+import Control.Monad.Reader
+import Control.Monad.Writer
 import Data.Monoid
 
 class Monad m => MonadSupply s m | m -> s where
@@ -36,6 +40,19 @@ instance Monad m => MonadSupply s (SupplyT s m) where
   supply = SupplyT $ do (x:xs) <- get
                         put xs
                         return x
+
+-- Monad transformer instances
+instance (Error e,MonadSupply s m) => MonadSupply s (ErrorT e m) where
+  supply = lift supply
+
+instance MonadSupply s m => MonadSupply s (StateT st m) where
+  supply = lift supply
+
+instance MonadSupply s m => MonadSupply s (ReaderT r m) where
+  supply = lift supply
+
+instance (Monoid w, MonadSupply s m) => MonadSupply s (WriterT w m) where
+  supply = lift supply
 
 -- | Monoid instance for the supply monad. Actually any monad/monoid pair gives
 -- rise to this monoid instance, but we can't write it like that because it

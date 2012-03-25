@@ -1,0 +1,4 @@
+0.2: Exported supply. Also added some monad transformer instances at the 
+request of ozgurakgun.
+
+0.1: First public release.
