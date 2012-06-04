@@ -23,7 +23,6 @@ import Control.Monad.State
 import Control.Monad.Error
 import Control.Monad.Reader
 import Control.Monad.Writer
-import Data.Monoid
 
 class Monad m => MonadSupply s m | m -> s where
   supply :: m s
@@ -54,9 +53,10 @@ instance MonadSupply s m => MonadSupply s (ReaderT r m) where
 instance (Monoid w, MonadSupply s m) => MonadSupply s (WriterT w m) where
   supply = lift supply
 
--- | Monoid instance for the supply monad. Actually any monad/monoid pair gives
--- rise to this monoid instance, but we can't write it like that because it
--- would conflict with existing instances provided by Data.Monoid.
+-- | Monoid instance for the supply monad. Actually any monad/monoid pair
+-- gives rise to this monoid instance, but we can't write its type like that
+-- because it would conflict with existing instances provided by Data.Monoid.
+--instance (Monoid a, Monad m) => Monoid (m a) where
 instance (Monoid a) => Monoid (Supply s a) where
   mempty = return mempty
   m1 `mappend` m2 = do
