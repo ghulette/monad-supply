@@ -26,6 +26,8 @@ import Control.Monad.Writer
 
 class Monad m => MonadSupply s m | m -> s where
   supply :: m s
+  peek :: m s
+  exhausted :: m Bool
 
 -- | Supply monad transformer.
 newtype SupplyT s m a = SupplyT (StateT [s] m a)
@@ -39,19 +41,29 @@ instance Monad m => MonadSupply s (SupplyT s m) where
   supply = SupplyT $ do (x:xs) <- get
                         put xs
                         return x
+  peek = SupplyT $ gets head
+  exhausted = SupplyT $ gets null
 
 -- Monad transformer instances
 instance (Error e,MonadSupply s m) => MonadSupply s (ErrorT e m) where
   supply = lift supply
+  peek = lift peek
+  exhausted = lift exhausted
 
 instance MonadSupply s m => MonadSupply s (StateT st m) where
   supply = lift supply
+  peek = lift peek
+  exhausted = lift exhausted
 
 instance MonadSupply s m => MonadSupply s (ReaderT r m) where
   supply = lift supply
+  peek = lift peek
+  exhausted = lift exhausted
 
 instance (Monoid w, MonadSupply s m) => MonadSupply s (WriterT w m) where
   supply = lift supply
+  peek = lift peek
+  exhausted = lift exhausted
 
 -- | Monoid instance for the supply monad. Actually any monad/monoid pair
 -- gives rise to this monoid instance, but we can't write its type like that
