@@ -1,6 +1,6 @@
-0.3: There are two new functions. The first, exhausted, checks whether  the
-supply is empty. The second, peek, will return the next element  without
-removing it from the supply.
+0.3: Two new functions, added at the request of Stefan Holdermans at Vector
+Fabrics. The first, exhausted, checks whether the supply is empty. The second,
+peek, will return the next element without removing it from the supply.
 
 0.2: Exported supply. Also added some monad transformer instances at the
 request of ozgurakgun.
