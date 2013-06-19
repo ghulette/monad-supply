@@ -31,11 +31,11 @@ class Monad m => MonadSupply s m | m -> s where
 
 -- | Supply monad transformer.
 newtype SupplyT s m a = SupplyT (StateT [s] m a)
-  deriving (Functor, Monad, MonadTrans, MonadIO)
+  deriving (Functor, Applicative, Monad, MonadTrans, MonadIO)
 
 -- | Supply monad. 
 newtype Supply s a = Supply (SupplyT s Identity a)
-  deriving (Functor, Monad, MonadSupply s)
+  deriving (Functor, Applicative, Monad, MonadSupply s)
 
 instance Monad m => MonadSupply s (SupplyT s m) where
   supply = SupplyT $ do (x:xs) <- get
