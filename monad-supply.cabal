@@ -1,6 +1,6 @@
 Name:          monad-supply
 Build-type:    Simple
-Version:       0.3
+Version:       0.4
 Cabal-Version: >= 1.6
 Synopsis:      Stateful supply monad.
 Description:   Support for computations which consume values from a (possibly infinite) supply.

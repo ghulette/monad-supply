@@ -18,6 +18,7 @@ module Control.Monad.Supply
 , supplies
 ) where
 
+import Control.Applicative
 import Control.Monad.Identity
 import Control.Monad.State
 import Control.Monad.Error
