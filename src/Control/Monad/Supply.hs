@@ -21,7 +21,7 @@ module Control.Monad.Supply
 import Control.Applicative
 import Control.Monad.Identity
 import Control.Monad.State
-import Control.Monad.Error
+import Control.Monad.Except
 import Control.Monad.Reader
 import Control.Monad.Writer
 
@@ -46,7 +46,7 @@ instance Monad m => MonadSupply s (SupplyT s m) where
   exhausted = SupplyT $ gets null
 
 -- Monad transformer instances
-instance (Error e,MonadSupply s m) => MonadSupply s (ErrorT e m) where
+instance MonadSupply s m => MonadSupply s (ExceptT e m) where
   supply = lift supply
   peek = lift peek
   exhausted = lift exhausted
