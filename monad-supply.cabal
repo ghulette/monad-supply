@@ -15,7 +15,8 @@ Tested-With:   GHC == 7.0.3
 Library
   Exposed-modules: Control.Monad.Supply
   Hs-Source-Dirs:  src
-  Build-Depends:   base >= 4 && < 5,mtl >= 2
+  Build-Depends:   base >= 4 && < 5,
+                   mtl >= 2.2.1
   GHC-Options:     -Wall
 
 Source-Repository head
