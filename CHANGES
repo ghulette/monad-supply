@@ -1,4 +1,4 @@
-0.6: Reverted to Control.Monad.Error.
+0.6: Reverted to Control.Monad.Error -- yields deprecation warnings but there is nothing to be done about it, yet.
 
 0.5: Merged patch from Thomas DuBuisson, added instances for MonadFix. Also, at the recommendation of GHC, changed Control.Monad.Error to Control.Monad.Except.
 
