@@ -24,7 +24,8 @@ import Control.Monad.Identity
 import Control.Monad.State
 import Control.Monad.Error
 import Control.Monad.Reader
-import Control.Monad.Writer
+import Control.Monad.Writer hiding ((<>))
+import Data.Semigroup
 
 class Monad m => MonadSupply s m | m -> s where
   supply :: m s
@@ -67,16 +68,19 @@ instance (Monoid w, MonadSupply s m) => MonadSupply s (WriterT w m) where
   peek = lift peek
   exhausted = lift exhausted
 
+instance (Semigroup a) => Semigroup (Supply s a) where
+  m1 <> m2 = do
+    x1 <- m1
+    x2 <- m2
+    return (x1 <> x2)
+
 -- | Monoid instance for the supply monad. Actually any monad/monoid pair
 -- gives rise to this monoid instance, but we can't write its type like that
 -- because it would conflict with existing instances provided by Data.Monoid.
 --instance (Monoid a, Monad m) => Monoid (m a) where
-instance (Monoid a) => Monoid (Supply s a) where
+instance (Semigroup a, Monoid a) => Monoid (Supply s a) where
   mempty = return mempty
-  m1 `mappend` m2 = do
-    x1 <- m1
-    x2 <- m2
-    return (x1 `mappend` x2)
+  m1 `mappend` m2 = m1 <> m2
 
 #if MIN_VERSION_base(4,11,0)
 instance Semigroup a => Semigroup (Supply s a) where
