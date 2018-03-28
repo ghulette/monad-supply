@@ -3,6 +3,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE CPP #-}
 
 -- | Support for computations which consume values from a (possibly infinite)
 -- supply. See <http://www.haskell.org/haskellwiki/New_monads/MonadSupply> for
@@ -76,6 +77,11 @@ instance (Monoid a) => Monoid (Supply s a) where
     x1 <- m1
     x2 <- m2
     return (x1 `mappend` x2)
+
+#if MIN_VERSION_base(4,11,0)
+instance Semigroup a => Semigroup (Supply s a) where
+  m1 <> m2 = (<>) <$> m1 <*> m2
+#endif
 
 -- | Get n supplies.
 supplies :: MonadSupply s m => Int -> m [s]
