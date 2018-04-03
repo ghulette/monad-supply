@@ -4,7 +4,7 @@ Version:       0.7
 Cabal-Version: >= 1.6
 Synopsis:      Stateful supply monad.
 Description:   Support for computations which consume values from a (possibly infinite) supply.
-License:       OtherLicense
+License:       MIT
 License-file:  LICENSE
 Category:      Control, Data, Monads
 Author:        Geoff Hulette and unknown HaskellWiki contributor(s).
