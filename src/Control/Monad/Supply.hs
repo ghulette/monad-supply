@@ -20,7 +20,9 @@ module Control.Monad.Supply
 ) where
 
 import           Control.Monad.Except
-import           Control.Monad.Identity
+#if !MIN_VERSION_base(4,11,0)
+import           Control.Monad.Fail
+#endif
 import           Control.Monad.Reader
 import           Control.Monad.State
 import           Control.Monad.Writer   hiding ((<>))
@@ -36,10 +38,10 @@ newtype SupplyT s m a = SupplyT (StateT [s] m a)
   deriving (Functor, Applicative, Monad, MonadTrans, MonadIO, MonadFix)
 
 -- | Supply monad.
-newtype Supply s a = Supply (SupplyT s Identity a)
+newtype Supply s a = Supply (SupplyT s Maybe a)
   deriving (Functor, Applicative, Monad, MonadSupply s, MonadFix)
 
-instance Monad m => MonadSupply s (SupplyT s m) where
+instance MonadFail m => MonadSupply s (SupplyT s m) where
   supply = SupplyT $ do (x:xs) <- get
                         put xs
                         return x
@@ -81,11 +83,11 @@ supplies n = replicateM n supply
 evalSupplyT :: Monad m => SupplyT s m a -> [s] -> m a
 evalSupplyT (SupplyT s) = evalStateT s
 
-evalSupply :: Supply s a -> [s] -> a
-evalSupply (Supply s) = runIdentity . evalSupplyT s
+evalSupply :: Supply s a -> [s] -> Maybe a
+evalSupply (Supply s) = evalSupplyT s
 
 runSupplyT :: Monad m => SupplyT s m a -> [s] -> m (a,[s])
 runSupplyT (SupplyT s) = runStateT s
 
-runSupply :: Supply s a -> [s] -> (a,[s])
-runSupply (Supply s) = runIdentity . runSupplyT s
+runSupply :: Supply s a -> [s] -> Maybe (a,[s])
+runSupply (Supply s) = runSupplyT s
