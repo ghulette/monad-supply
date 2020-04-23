@@ -33,4 +33,3 @@ Some stuff was added, like a monoid instance and various helper functions.
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
     FROM, OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS IN
     THE WORK.
-
