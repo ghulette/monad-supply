@@ -30,7 +30,9 @@ import           Control.Monad.Reader    (ReaderT)
 import           Control.Monad.State     (StateT, get, gets, put, evalStateT, runStateT)
 import           Control.Monad.Trans     (MonadTrans, lift)
 import           Control.Monad.Writer    (WriterT)
+#if !MIN_VERSION_base(4,11,0)
 import           Data.Semigroup          (Semigroup, (<>))
+#endif
 
 import qualified Control.Monad.Trans.State.Lazy as LazyState
 
