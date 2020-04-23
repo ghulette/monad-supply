@@ -9,79 +9,85 @@
 -- details.
 
 module Control.Monad.Supply
-( MonadSupply (..)
-, SupplyT
-, Supply
-, evalSupplyT
-, evalSupply
-, runSupplyT
-, runSupply
-, supplies
-) where
+    ( MonadSupply(..)
+    , SupplyT
+    , Supply
+    , evalSupplyT
+    , evalSupply
+    , runSupplyT
+    , runSupply
+    , supplies
+    ) where
 
-import           Control.Monad.Except
+import           Control.Monad           (replicateM)
+import           Control.Monad.Except    (ExceptT, MonadError, throwError, catchError)
+import           Control.Monad.Fix       (MonadFix)
+import           Control.Monad.IO.Class  (MonadIO)
+import           Control.Monad.Reader    (ReaderT)
+import           Control.Monad.State     (StateT, get, gets, put, evalStateT, runStateT)
+import           Control.Monad.Trans     (MonadTrans, lift)
+import           Control.Monad.Writer    (WriterT)
 #if !MIN_VERSION_base(4,11,0)
-import           Control.Monad.Fail
+import           Control.Monad.Fail      (MonadFail)
+import           Data.Semigroup          (Semigroup, (<>))
 #endif
-import           Control.Monad.Reader
-import           Control.Monad.State
-import           Control.Monad.Writer   hiding ((<>))
-#if !MIN_VERSION_base(4,11,0)
-import           Data.Semigroup
-#endif
+
 import qualified Control.Monad.Trans.State.Lazy as LazyState
 
+
 class Monad m => MonadSupply s m | m -> s where
-  supply :: m s
-  peek :: m s
-  exhausted :: m Bool
+    supply :: m s
+    peek :: m s
+    exhausted :: m Bool
 
 -- | Supply monad transformer.
 newtype SupplyT s m a = SupplyT { unSupplyT :: StateT [s] m a }
-  deriving (Functor, Applicative, Monad, MonadTrans, MonadIO, MonadFix)
+    deriving (Functor, Applicative, Monad, MonadTrans, MonadIO, MonadFix)
 
 instance MonadError e m => MonadError e (SupplyT s m) where
     throwError = lift . throwError
-    catchError m h = SupplyT $ LazyState.liftCatch catchError (unSupplyT m) (unSupplyT . h)
+    catchError m h =
+        SupplyT $ LazyState.liftCatch catchError (unSupplyT m) (unSupplyT . h)
 
 -- | Supply monad.
 newtype Supply s a = Supply (SupplyT s Maybe a)
-  deriving (Functor, Applicative, Monad, MonadSupply s, MonadFix)
+    deriving (Functor, Applicative, Monad, MonadSupply s, MonadFix)
 
 instance MonadFail m => MonadSupply s (SupplyT s m) where
-  supply = SupplyT $ do (x:xs) <- get
-                        put xs
-                        return x
-  peek = SupplyT $ gets head
-  exhausted = SupplyT $ gets null
+    supply = SupplyT $ do
+        (x:xs) <- get
+        put xs
+        return x
+    peek = SupplyT $ gets head
+    exhausted = SupplyT $ gets null
 
 -- Monad transformer instances
 instance (MonadSupply s m) => MonadSupply s (ExceptT e m) where
-  supply = lift supply
-  peek = lift peek
-  exhausted = lift exhausted
+    supply = lift supply
+    peek = lift peek
+    exhausted = lift exhausted
 
 instance MonadSupply s m => MonadSupply s (StateT st m) where
-  supply = lift supply
-  peek = lift peek
-  exhausted = lift exhausted
+    supply = lift supply
+    peek = lift peek
+    exhausted = lift exhausted
 
 instance MonadSupply s m => MonadSupply s (ReaderT r m) where
-  supply = lift supply
-  peek = lift peek
-  exhausted = lift exhausted
+    supply = lift supply
+    peek = lift peek
+    exhausted = lift exhausted
 
 instance (Monoid w, MonadSupply s m) => MonadSupply s (WriterT w m) where
-  supply = lift supply
-  peek = lift peek
-  exhausted = lift exhausted
+    supply = lift supply
+    peek = lift peek
+    exhausted = lift exhausted
 
 instance Semigroup a => Semigroup (Supply s a) where
-  m1 <> m2 = (<>) <$> m1 <*> m2
+    m1 <> m2 = (<>) <$> m1 <*> m2
 
 instance (Semigroup a, Monoid a) => Monoid (Supply s a) where
-  mempty = return mempty
-  m1 `mappend` m2 = m1 <> m2
+    mempty = return mempty
+    m1 `mappend` m2 = m1 <> m2
 
 -- | Get n supplies.
 supplies :: MonadSupply s m => Int -> m [s]
