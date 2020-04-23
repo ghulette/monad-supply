@@ -1,4 +1,6 @@
-# Supply Monad 
+![logo](supply_monad.png)
+
+[![Language](https://img.shields.io/badge/language-Haskell-yellow.svg)](https://www.haskell.org/) [![Hackage](https://img.shields.io/hackage/v/monad-supply.svg)](http://hackage.haskell.org/package/monad-supply)
 
 > A monad to support computations which consume values from a (possibly infinite) supply.
 
