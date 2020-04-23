@@ -27,6 +27,7 @@ import           Control.Monad.Reader
 import           Control.Monad.State
 import           Control.Monad.Writer   hiding ((<>))
 import           Data.Semigroup
+import qualified Control.Monad.Trans.State.Lazy as LazyState
 
 class Monad m => MonadSupply s m | m -> s where
   supply :: m s
@@ -34,8 +35,12 @@ class Monad m => MonadSupply s m | m -> s where
   exhausted :: m Bool
 
 -- | Supply monad transformer.
-newtype SupplyT s m a = SupplyT (StateT [s] m a)
+newtype SupplyT s m a = SupplyT { unSupplyT :: StateT [s] m a }
   deriving (Functor, Applicative, Monad, MonadTrans, MonadIO, MonadFix)
+
+instance MonadError e m => MonadError e (SupplyT s m) where
+    throwError = lift . throwError
+    catchError m h = SupplyT $ LazyState.liftCatch catchError (unSupplyT m) (unSupplyT . h)
 
 -- | Supply monad.
 newtype Supply s a = Supply (SupplyT s Maybe a)
