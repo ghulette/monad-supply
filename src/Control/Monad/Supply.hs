@@ -26,7 +26,9 @@ import           Control.Monad.Fail
 import           Control.Monad.Reader
 import           Control.Monad.State
 import           Control.Monad.Writer   hiding ((<>))
+#if !MIN_VERSION_base(4,9,0)
 import           Data.Semigroup
+#endif
 import qualified Control.Monad.Trans.State.Lazy as LazyState
 
 class Monad m => MonadSupply s m | m -> s where
