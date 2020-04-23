@@ -21,9 +21,6 @@ module Control.Monad.Supply
 
 import           Control.Monad           (replicateM)
 import           Control.Monad.Except    (ExceptT, MonadError, throwError, catchError)
-#if !MIN_VERSION_base(4,11,0)
-import           Control.Monad.Fail      (MonadFail)
-#endif
 import           Control.Monad.Fix       (MonadFix)
 import           Control.Monad.IO.Class  (MonadIO)
 import           Control.Monad.Reader    (ReaderT)
@@ -31,6 +28,7 @@ import           Control.Monad.State     (StateT, get, gets, put, evalStateT, ru
 import           Control.Monad.Trans     (MonadTrans, lift)
 import           Control.Monad.Writer    (WriterT)
 #if !MIN_VERSION_base(4,11,0)
+import           Control.Monad.Fail      (MonadFail)
 import           Data.Semigroup          (Semigroup, (<>))
 #endif
 
