@@ -1,0 +1,29 @@
+name:                monad-supply
+build-type:          Simple
+version:             0.8
+synopsis:            Stateful supply monad
+description:         Support for computations which consume values from a (possibly infinite) supply.
+homepage:            https://github.com/ghulette/monad-supply
+github:              ghulette/monad-supply
+license:             OtherLicense
+license-file:        LICENSE
+author:              Geoff Hulette and HaskellWiki contributors
+maintainer:          Geoff Hulette <geoff@hulette.net>
+stability:           experimental
+copyright:           2011-2020 Geoff Hulette and HaskellWiki contributors
+category:            Control, Data, Monad
+extra-source-files:
+- README.md
+
+dependencies:
+  - base >= 4.7 && < 5
+  - mtl >= 2.2.2 && < 3.0.0
+  - transformers >= 0.5.6.2 && < 0.6.0.0
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - Control.Monad.Supply
+  ghc-options: -Wall
+
+#tests: 
