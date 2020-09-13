@@ -1,6 +1,6 @@
 name:                monad-supply
 build-type:          Simple
-version:             0.8
+version:             0.9
 synopsis:            Stateful supply monad
 description:         Support for computations which consume values from a (possibly infinite) supply.
 homepage:            https://github.com/ghulette/monad-supply
