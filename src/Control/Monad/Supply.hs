@@ -19,17 +19,18 @@ module Control.Monad.Supply
     , supplies
     ) where
 
-import           Control.Monad           (replicateM)
-import           Control.Monad.Except    (ExceptT, MonadError, throwError, catchError)
-import           Control.Monad.Fix       (MonadFix)
-import           Control.Monad.IO.Class  (MonadIO)
-import           Control.Monad.Reader    (ReaderT)
-import           Control.Monad.State     (StateT, get, gets, put, evalStateT, runStateT)
-import           Control.Monad.Trans     (MonadTrans, lift)
-import           Control.Monad.Writer    (WriterT)
+import           Control.Monad             (replicateM)
+import           Control.Monad.Except      (ExceptT, MonadError, throwError, catchError)
+import           Control.Monad.Fix         (MonadFix)
+import           Control.Monad.IO.Class    (MonadIO)
+import           Control.Monad.Reader      (ReaderT)
+import           Control.Monad.State       (StateT, get, gets, put, evalStateT, runStateT)
+import           Control.Monad.Trans       (MonadTrans, lift)
+import           Control.Monad.Trans.Maybe (MaybeT)
+import           Control.Monad.Writer      (WriterT)
 #if !MIN_VERSION_base(4,11,0)
-import           Control.Monad.Fail      (MonadFail)
-import           Data.Semigroup          (Semigroup, (<>))
+import           Control.Monad.Fail        (MonadFail)
+import           Data.Semigroup            (Semigroup, (<>))
 #endif
 
 import qualified Control.Monad.Trans.State.Lazy as LazyState
@@ -73,6 +74,11 @@ instance MonadSupply s m => MonadSupply s (StateT st m) where
     exhausted = lift exhausted
 
 instance MonadSupply s m => MonadSupply s (ReaderT r m) where
+    supply = lift supply
+    peek = lift peek
+    exhausted = lift exhausted
+
+instance MonadSupply s m => MonadSupply s (MaybeT m) where
     supply = lift supply
     peek = lift peek
     exhausted = lift exhausted
